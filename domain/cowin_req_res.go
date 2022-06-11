@@ -34,3 +34,23 @@ type Center struct {
 type CowinResponse struct {
 	Centers []Center `json:"centers"`
 }
+
+func (cowinResponse CowinResponse) FilterValidCenter(validCenters *[]ValidCenter) {
+	for _, center := range cowinResponse.Centers {
+		if len(center.Sessions) != 0 {
+			for _, session := range center.Sessions {
+				if session.MinAgeLimit == 18 && session.AvailableCapacity != 0 {
+					validCenter := ValidCenter{
+						CenterName:        center.Name,
+						BlockName:         center.BlockName,
+						Pincode:           center.Pincode,
+						Date:              session.Date,
+						AvailableCapacity: session.AvailableCapacity,
+						Vaccine:           session.Vaccine,
+					}
+					*validCenters = append(*validCenters, validCenter)
+				}
+			}
+		}
+	}
+}
